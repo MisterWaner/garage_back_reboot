@@ -8,6 +8,13 @@
       "when": 1757455450424,
       "tag": "0000_third_puppet_master",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1757522159583,
+      "tag": "0001_crazy_james_howlett",
+      "breakpoints": true
     }
   ]
 }
