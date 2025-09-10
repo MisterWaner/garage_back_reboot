@@ -1,14 +1,12 @@
-import { pgTable, pgEnum, serial, varchar, time } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, time } from 'drizzle-orm/pg-core';
 import { users } from './user.ts';
-
-export const OpeningStatusEnum = pgEnum('status', ['open', 'closed']);
 
 export const schedules = pgTable('schedules', {
     id: serial('id').primaryKey(),
     day: varchar('day', { length: 50 }).notNull(),
     openingTime: time('opening_time').notNull(),
     closingTime: time('closing_time').notNull(),
-    status: OpeningStatusEnum(),
+    status: varchar('status', { length: 50 }).notNull(),
     addedBy: varchar('added_by', { length: 255 })
         .notNull()
         .references(() => users.id),

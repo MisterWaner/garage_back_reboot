@@ -15,6 +15,20 @@
       "when": 1757522159583,
       "tag": "0001_crazy_james_howlett",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1757529475709,
+      "tag": "0002_puzzling_moon_knight",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1757529631149,
+      "tag": "0003_oval_maelstrom",
+      "breakpoints": true
     }
   ]
 }
