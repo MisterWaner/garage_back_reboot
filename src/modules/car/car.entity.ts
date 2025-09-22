@@ -1,4 +1,4 @@
-import { User } from '../user/user.entity.ts';
+import { User } from '../users/user.entity.ts';
 
 export enum CarStatus {
     AVAILABLE = 'available',

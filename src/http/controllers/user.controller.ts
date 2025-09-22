@@ -1,5 +1,5 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { UserService } from '../../modules/user/user.service.ts';
+import { UserService } from '../../modules/users/user.service.ts';
 
 export class UserController {
     private userService: UserService;
