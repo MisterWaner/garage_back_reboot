@@ -36,7 +36,7 @@ export class UserService implements UserRepository {
             email = `${first_name.toLowerCase()}.${last_name.toLowerCase()}${increment}@garage-vincent-parrot.com`;
             increment++;
         }
-        
+
         await db.insert(users).values({
             id,
             first_name,
@@ -47,23 +47,70 @@ export class UserService implements UserRepository {
             temporary_password: true,
         });
     }
-    createAdmin({
+
+    async createAdmin({
         first_name,
         last_name,
         role,
+        password,
     }: CreateAdminInput): Promise<void> {
-        throw new Error('Method not implemented.');
+        const id = await generateStringId();
+        const hashedPassword = await hashPassword(password);
+        const email = `${first_name.toLowerCase()}.${last_name.toLowerCase()}@garage-vincent-parrot.com`;
+
+        await db.insert(users).values({
+            id,
+            first_name,
+            last_name,
+            email,
+            role,
+            password: hashedPassword,
+            temporary_password: false,
+        });
     }
-    findUserByEmail(email: string): Promise<UserResponse | null> {
-        throw new Error('Method not implemented.');
+
+    async findUserByEmail(email: string): Promise<UserResponse | null> {
+        const user = await db
+            .select()
+            .from(users)
+            .where(eq(users.email, email));
+
+        if (!user || user.length === 0) {
+            return null;
+        }
+
+        return user[0] as UserResponse;
     }
-    findUserById(id: string): Promise<UserResponse | null> {
-        throw new Error('Method not implemented.');
+
+    async findUserById(id: string): Promise<UserResponse | null> {
+        const user = await db.select().from(users).where(eq(users.id, id));
+
+        if (!user || user.length === 0) {
+            return null;
+        }
+
+        return user[0] as UserResponse;
     }
-    updatePassword(id: string, data: UpdatePasswordInput): Promise<void> {
-        throw new Error('Method not implemented.');
+
+    async updatePassword(id: string, data: UpdatePasswordInput): Promise<void> {
+        const user = await this.findUserById(id);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const hashedPassword = await hashPassword(data.password);
+        await db
+            .update(users)
+            .set({ password: hashedPassword, temporary_password: false })
+            .where(eq(users.id, id));
     }
-    deleteUser(id: string): Promise<void> {
-        throw new Error('Method not implemented.');
+
+    async deleteUser(id: string): Promise<void> {
+        const user = await this.findUserById(id);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        await db.delete(users).where(eq(users.id, id));
     }
 }

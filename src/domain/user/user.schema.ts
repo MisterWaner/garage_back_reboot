@@ -9,11 +9,6 @@ const createEmployeeSchema = z.object({
         .string()
         .min(3, 'Le nom doit contenir au moins 3 caractères')
         .trim(),
-    email: z.email().trim().toLowerCase(),
-    password: z
-        .string()
-        .min(6, 'Le mot de passe doit contenir au moins 6 caractères'),
-    temporary_password: z.boolean().default(true),
     role: z.enum(['EMPLOYEE']),
 });
 

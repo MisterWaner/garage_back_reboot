@@ -15,6 +15,7 @@ export interface UserRepository {
         first_name,
         last_name,
         role,
+        password,
     }: CreateAdminInput): Promise<void>;
     findUserByEmail(email: string): Promise<UserResponse | null>;
     findUserById(id: string): Promise<UserResponse | null>;
