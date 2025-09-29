@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify';
-import { userRoutes } from './user.routes.ts';
+import { userRouter } from './user.routes.js';
 
-export async function appRoutes(fastify: FastifyInstance) {
-    fastify.register(userRoutes, { prefix: '/users' });
+export async function routes(fastify: FastifyInstance) {
+    console.log('Registering routes...');
+    fastify.register(userRouter, { prefix: '/users' });
 }

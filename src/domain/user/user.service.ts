@@ -1,19 +1,19 @@
 import { eq } from 'drizzle-orm';
 
-import type { UserRepository } from '../../application/user.repository.ts';
-import { db } from '../../infrastructure/db/drizzle.ts';
+import type { UserRepository } from '../../application/user.repository.js';
+import { db } from '../../infrastructure/db/drizzle.js';
 import {
     hashPassword,
     generateTemporaryPassword,
-} from '../../shared/utils/crypto.ts';
-import { generateStringId } from '../../shared/utils/id-generator.ts';
+} from '../../shared/utils/crypto.js';
+import { generateStringId } from '../../shared/utils/id-generator.js';
 import type {
     CreateAdminInput,
     CreateEmployeeInput,
     UserResponse,
     UpdatePasswordInput,
-} from './user.schema.ts';
-import { users } from '../../infrastructure/db/schema/users.ts';
+} from './user.schema.js';
+import { users } from '../../infrastructure/db/schema/users.js';
 
 export class UserService implements UserRepository {
     async createEmployee({
@@ -69,6 +69,40 @@ export class UserService implements UserRepository {
         });
     }
 
+    async findAllUsers(): Promise<UserResponse[]> {
+        const allUsers = await db.select().from(users);
+        if (!allUsers) {
+            return [];
+        }
+
+        return allUsers as UserResponse[];
+    }
+
+    async findAllEmployees(): Promise<UserResponse[]> {
+        const employees = await db
+            .select()
+            .from(users)
+            .where(eq(users.role, 'EMPLOYEE'));
+        if (!employees) {
+            return [];
+        }
+
+        return employees as UserResponse[];
+    }
+
+    async findAllAdmins(): Promise<UserResponse[]> {
+        const admins = await db
+            .select()
+            .from(users)
+            .where(eq(users.role, 'ADMIN'));
+
+        if (!admins) {
+            return [];
+        }
+
+        return admins as UserResponse[];
+    }
+
     async findUserByEmail(email: string): Promise<UserResponse | null> {
         const user = await db
             .select()
@@ -98,7 +132,17 @@ export class UserService implements UserRepository {
             throw new Error('User not found');
         }
 
-        const hashedPassword = await hashPassword(data.password);
+        const { password, confirm_password } = data;
+
+        if (!confirm_password || !password) {
+            throw new Error('Both password and confirm_password are required');
+        }
+
+        if (password !== confirm_password) {
+            throw new Error('Passwords do not match');
+        }
+
+        const hashedPassword = await hashPassword(password);
         await db
             .update(users)
             .set({ password: hashedPassword, temporary_password: false })

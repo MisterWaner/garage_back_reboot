@@ -17,6 +17,9 @@ export interface UserRepository {
         role,
         password,
     }: CreateAdminInput): Promise<void>;
+    findAllUsers(): Promise<UserResponse[]>;
+    findAllEmployees(): Promise<UserResponse[]>;
+    findAllAdmins(): Promise<UserResponse[]>;
     findUserByEmail(email: string): Promise<UserResponse | null>;
     findUserById(id: string): Promise<UserResponse | null>;
     updatePassword(id: string, data: UpdatePasswordInput): Promise<void>;
