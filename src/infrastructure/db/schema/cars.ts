@@ -3,7 +3,7 @@ import { users } from './users.js';
 
 export const cars = pgTable('cars', {
     id: varchar('license_plate').primaryKey(),
-    reference: varchar('reference', { length: 100 }).notNull(),
+    reference: varchar('reference', { length: 255 }).notNull().unique(),
     brand: varchar('brand', { length: 100 }).notNull(),
     model: varchar('model', { length: 100 }).notNull(),
     year: integer('year').notNull(),
