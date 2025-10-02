@@ -1,12 +1,12 @@
 import type { FastifyInstance } from 'fastify';
-import { UserController } from '../controllers/user.controller.js';
+import { UserController } from '../../../infrastructure/http/controllers/user.controller.js';
 import { UserService } from '../../../domain/user/user.service.js';
 import type {
     CreateEmployeeInput,
     CreateAdminInput,
     UserResponse,
     UpdatePasswordInput,
-} from '../../../domain/user/user.schema.ts';
+} from '../../../domain/user/user.schema.js';
 
 const userService = new UserService();
 const userController = new UserController(userService);

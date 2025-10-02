@@ -4,12 +4,13 @@
         // File Layout
         "rootDir": "./src",
         "outDir": "./dist",
+        "resolveJsonModule": true,
 
         // Environment Settings
         // See also https://aka.ms/tsconfig/module
-        "module": "node16",
+        "module": "nodenext",
         "target": "esnext",
-        "moduleResolution": "node16",
+        "moduleResolution": "nodenext",
         "types": [],
         // For nodejs:
         // "lib": ["esnext"],
@@ -42,7 +43,9 @@
         "isolatedModules": true,
         "noUncheckedSideEffectImports": true,
         "moduleDetection": "force",
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules"]

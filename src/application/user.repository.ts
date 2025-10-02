@@ -3,7 +3,7 @@ import type {
     CreateAdminInput,
     UserResponse,
     UpdatePasswordInput,
-} from '../domain/user/user.schema.ts';
+} from '../domain/user/user.schema.js';
 
 export interface UserRepository {
     createEmployee({

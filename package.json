@@ -10,28 +10,24 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc",
         "start": "node dist/server.js",
-        "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch\" \"nodemon -r dotenv/config dist/server.js\" ",
-        "db:generate": "drizzle-kit generate",
-        "db:migrate": "drizzle-kit migrate",
-        "db:push": "drizzle-kit push",
-        "db:pull": "drizzle-kit pull"
+        "dev": "concurrently -k -n \"Typescript,Node\" -p \"[{name}]\" -c \"blue,green\" \"tsc --watch\" \"nodemon -r dotenv/config dist/server.js\" "
     },
     "dependencies": {
         "@fastify/cors": "^11.1.0",
+        "@prisma/client": "^6.16.3",
         "@types/bcrypt": "^6.0.0",
         "@types/pg": "^8.15.5",
         "bcrypt": "^6.0.0",
         "dotenv": "^17.2.2",
-        "drizzle-orm": "^0.44.5",
         "fastify": "^5.6.0",
         "nanoid": "^5.1.5",
         "pg": "^8.16.3",
+        "prisma": "^6.16.3",
         "zod": "^4.1.11"
     },
     "devDependencies": {
         "@types/node": "^24.3.1",
         "concurrently": "^9.2.1",
-        "drizzle-kit": "^0.31.4",
         "nodemon": "^3.1.10",
         "ts-node": "^10.9.2",
         "tsx": "^4.20.5",
