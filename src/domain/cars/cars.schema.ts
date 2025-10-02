@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { userResponseSchema } from '../user/user.schema.js';
 
-const createCarSchema = z.object({
-    license_plate: z
+export const createCarSchema = z.object({
+    licence_plate: z
         .string()
         .min(1)
         .max(20)
@@ -11,7 +11,6 @@ const createCarSchema = z.object({
         ) // French license plate format
         .trim()
         .toUpperCase(),
-    reference: z.string().min(1).max(100),
     brand: z.string().min(1).max(100),
     model: z.string().min(1).max(100),
     year: z
@@ -27,11 +26,11 @@ const createCarSchema = z.object({
     description: z.string().min(1),
     images: z.array(z.url()).min(1),
     status: z.enum(['available', 'sold', 'reserved']),
-    added_by: userResponseSchema.shape.id,
+    added_by: userResponseSchema.shape.user_id,
 });
 
 const carResponseSchema = z.object({
-    license_plate: z
+    licence_plate: z
         .string()
         .min(1)
         .max(20)
@@ -56,11 +55,27 @@ const carResponseSchema = z.object({
     description: z.string().min(1),
     images: z.array(z.url()).min(1),
     status: z.enum(['available', 'sold', 'reserved']),
-    added_by: userResponseSchema.shape.id,
+    added_by: userResponseSchema.shape.user_id,
 });
 
-const updateCarSchema = createCarSchema.partial();
-
+const updateCarSchema = z.object({
+    reference: z.string().min(1).max(100),
+    brand: z.string().min(1).max(100),
+    model: z.string().min(1).max(100),
+    year: z
+        .number()
+        .int()
+        .min(1886)
+        .max(new Date().getFullYear() + 1),
+    mileage: z.number().int().min(0),
+    price: z.number().int().min(0),
+    color: z.string().min(1).max(50),
+    transmission: z.string().min(1).max(50),
+    fuel_type: z.string().min(1).max(50),
+    description: z.string().min(1),
+    images: z.array(z.url()).min(1),
+    status: z.enum(['available', 'sold', 'reserved']),
+});
 
 export type CreateCarInput = z.infer<typeof createCarSchema>;
 export type CarResponse = z.infer<typeof carResponseSchema>;

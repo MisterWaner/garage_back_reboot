@@ -57,7 +57,7 @@ const createAdminSchema = z
     });
 
 export const userResponseSchema = z.object({
-    id: z.nanoid(),
+    user_id: z.nanoid(),
     first_name: z.string(),
     last_name: z.string(),
     email: z.email(),

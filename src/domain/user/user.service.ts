@@ -1,7 +1,6 @@
-import { eq } from 'drizzle-orm';
+import { PrismaClient } from '../../infrastructure/db/generated/prisma/index.js';
 
 import type { UserRepository } from '../../application/user.repository.js';
-import { db } from '../../infrastructure/db/drizzle.js';
 import {
     hashPassword,
     generateTemporaryPassword,
@@ -13,7 +12,8 @@ import type {
     UserResponse,
     UpdatePasswordInput,
 } from './user.schema.js';
-import { users } from '../../infrastructure/db/schema/users.js';
+
+const prisma = new PrismaClient();
 
 export class UserService implements UserRepository {
     async createEmployee({
@@ -27,24 +27,25 @@ export class UserService implements UserRepository {
         let email = `${first_name.toLowerCase()}.${last_name.toLowerCase()}@garage-vincent-parrot.com`;
         let increment = 1;
 
-        const existingEmail = await db
-            .select()
-            .from(users)
-            .where(eq(users.email, email));
+        const existingEmail = await prisma.user.findUnique({
+            where: { email },
+        });
 
         if (existingEmail) {
             email = `${first_name.toLowerCase()}.${last_name.toLowerCase()}${increment}@garage-vincent-parrot.com`;
             increment++;
         }
 
-        await db.insert(users).values({
-            id,
-            first_name,
-            last_name,
-            email,
-            role,
-            password: hashedPassword,
-            temporary_password: true,
+        await prisma.user.create({
+            data: {
+                user_id: id,
+                first_name,
+                last_name,
+                email,
+                role,
+                password: hashedPassword,
+                temporary_password: true,
+            },
         });
     }
 
@@ -58,19 +59,21 @@ export class UserService implements UserRepository {
         const hashedPassword = await hashPassword(password);
         const email = `${first_name.toLowerCase()}.${last_name.toLowerCase()}@garage-vincent-parrot.com`;
 
-        await db.insert(users).values({
-            id,
-            first_name,
-            last_name,
-            email,
-            role,
-            password: hashedPassword,
-            temporary_password: false,
+        await prisma.user.create({
+            data: {
+                user_id: id,
+                first_name,
+                last_name,
+                email,
+                role,
+                password: hashedPassword,
+                temporary_password: false,
+            },
         });
     }
 
     async findAllUsers(): Promise<UserResponse[]> {
-        const allUsers = await db.select().from(users);
+        const allUsers = await prisma.user.findMany();
         if (!allUsers) {
             return [];
         }
@@ -79,10 +82,10 @@ export class UserService implements UserRepository {
     }
 
     async findAllEmployees(): Promise<UserResponse[]> {
-        const employees = await db
-            .select()
-            .from(users)
-            .where(eq(users.role, 'EMPLOYEE'));
+        const employees = await prisma.user.findMany({
+            where: { role: 'EMPLOYEE' },
+        });
+
         if (!employees) {
             return [];
         }
@@ -91,10 +94,9 @@ export class UserService implements UserRepository {
     }
 
     async findAllAdmins(): Promise<UserResponse[]> {
-        const admins = await db
-            .select()
-            .from(users)
-            .where(eq(users.role, 'ADMIN'));
+        const admins = await prisma.user.findMany({
+            where: { role: 'ADMIN' },
+        });
 
         if (!admins) {
             return [];
@@ -104,26 +106,27 @@ export class UserService implements UserRepository {
     }
 
     async findUserByEmail(email: string): Promise<UserResponse | null> {
-        const user = await db
-            .select()
-            .from(users)
-            .where(eq(users.email, email));
+        const user = await prisma.user.findUnique({
+            where: { email },
+        });
 
-        if (!user || user.length === 0) {
+        if (!user) {
             return null;
         }
 
-        return user[0] as UserResponse;
+        return user as UserResponse;
     }
 
     async findUserById(id: string): Promise<UserResponse | null> {
-        const user = await db.select().from(users).where(eq(users.id, id));
+        const user = await prisma.user.findUnique({
+            where: { user_id: id },
+        });
 
-        if (!user || user.length === 0) {
+        if (!user) {
             return null;
         }
 
-        return user[0] as UserResponse;
+        return user as UserResponse;
     }
 
     async updatePassword(id: string, data: UpdatePasswordInput): Promise<void> {
@@ -143,10 +146,10 @@ export class UserService implements UserRepository {
         }
 
         const hashedPassword = await hashPassword(password);
-        await db
-            .update(users)
-            .set({ password: hashedPassword, temporary_password: false })
-            .where(eq(users.id, id));
+        await prisma.user.update({
+            where: { user_id: id },
+            data: { password: hashedPassword, temporary_password: false },
+        });
     }
 
     async deleteUser(id: string): Promise<void> {
@@ -155,6 +158,8 @@ export class UserService implements UserRepository {
             throw new Error('User not found');
         }
 
-        await db.delete(users).where(eq(users.id, id));
+        await prisma.user.delete({
+            where: { user_id: id },
+        });
     }
 }

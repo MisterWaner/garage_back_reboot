@@ -4,27 +4,111 @@ import type {
     CarResponse,
     UpdateCarInput,
 } from './cars.schema.js';
-import { db } from '../../infrastructure/db/drizzle.js';
-import { cars } from '../../infrastructure/db/schema/cars.js';
+import {
+    PrismaClient,
+    Transmission,
+    FuelType,
+    CarStatus,
+} from '../../infrastructure/db/generated/prisma/index.js';
 import { generateCarReference } from '../../shared/utils/car-reference-generator.js';
 
+const prisma = new PrismaClient();
+
 export class CarService implements CarRepository {
-    async createCar(data: CreateCarInput): Promise<void> {}
-    async findAllCars(): Promise<CarResponse[]> {
-        throw new Error('Method not implemented.');
+    async createCar(data: CreateCarInput): Promise<void> {
+        const reference = await generateCarReference(
+            prisma,
+            data.brand,
+            data.model
+        );
+
+        await prisma.car.create({
+            data: {
+                ...data,
+                reference,
+                transmission: data.transmission as Transmission,
+                fuel_type: data.fuel_type as FuelType,
+                status: data.status as CarStatus,
+            },
+        });
     }
-    async findCarByLicensePlate(
-        license_plate: string
+    async findAllCars(): Promise<CarResponse[]> {
+        const cars = await prisma.car.findMany();
+
+        if (!cars) {
+            return [];
+        }
+
+        return cars.map((car) => ({
+            ...car,
+            transmission: String(car.transmission),
+            fuel_type: String(car.fuel_type),
+            status: car.status.toLowerCase() as
+                | 'available'
+                | 'sold'
+                | 'reserved',
+            description: car.description ?? '',
+        }));
+    }
+    async findCarByLicencePlate(
+        licence_plate: string
     ): Promise<CarResponse | null> {
-        throw new Error('Method not implemented.');
+        const car = await prisma.car.findUnique({
+            where: { licence_plate },
+        });
+
+        if (!car) {
+            return null;
+        }
+
+        return {
+            ...car,
+            transmission: String(car.transmission),
+            fuel_type: String(car.fuel_type),
+            status: car.status.toLowerCase() as
+                | 'available'
+                | 'sold'
+                | 'reserved',
+            description: car.description ?? '',
+        };
     }
     async updateCar(
-        license_plate: string,
+        licence_plate: string,
         data: UpdateCarInput
     ): Promise<void> {
-        throw new Error('Method not implemented.');
+        const car = this.findCarByLicencePlate(licence_plate);
+
+        if (!car) {
+            throw new Error('Car not found');
+        }
+
+        await prisma.car.update({
+            where: { licence_plate },
+            data: {
+                reference: data.reference,
+                brand: data.brand,
+                model: data.model,
+                year: data.year,
+                mileage: data.mileage,
+                price: data.price,
+                color: data.color,
+                transmission: data.transmission as Transmission,
+                fuel_type: data.fuel_type as FuelType,
+                status: data.status as CarStatus,
+                description: data.description,
+                images: data.images,
+            },
+        });
     }
-    async deleteCar(license_plate: string): Promise<void> {
-        throw new Error('Method not implemented.');
+    async deleteCar(licence_plate: string): Promise<void> {
+        const car = this.findCarByLicencePlate(licence_plate);
+
+        if (!car) {
+            throw new Error('Car not found');
+        }
+
+        await prisma.car.delete({
+            where: { licence_plate },
+        });
     }
 }

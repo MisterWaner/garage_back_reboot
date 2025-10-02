@@ -7,7 +7,7 @@ import type {
 export interface CarRepository {
     createCar(data: CreateCarInput): Promise<void>;
     findAllCars(): Promise<CarResponse[]>;
-    findCarByLicensePlate(license_plate: string): Promise<CarResponse | null>;
-    updateCar(license_plate: string, data: UpdateCarInput): Promise<void>;
-    deleteCar(license_plate: string): Promise<void>;
+    findCarByLicencePlate(licence_plate: string): Promise<CarResponse | null>;
+    updateCar(licence_plate: string, data: UpdateCarInput): Promise<void>;
+    deleteCar(licence_plate: string): Promise<void>;
 }
