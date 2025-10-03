@@ -1,7 +1,4 @@
-import { PrismaClient } from '../../infrastructure/db/generated/prisma/index.js';
-
-const prisma: PrismaClient = new PrismaClient();
-
+import type { PrismaClient } from '../../generated/prisma/client.js';
 /**
  * Generates a unique car reference based on brand, model, and year.
  * The format is BRAND-MODEL-YEAR-XXX where XXX is a zero-padded incrementing number.

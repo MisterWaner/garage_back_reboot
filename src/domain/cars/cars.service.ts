@@ -4,16 +4,9 @@ import type {
     CarResponse,
     UpdateCarInput,
 } from './cars.schema.js';
-import {
-    PrismaClient,
-    Transmission,
-    FuelType,
-    CarStatus,
-} from '../../infrastructure/db/generated/prisma/index.js';
+import prisma from '../../infrastructure/db/prisma.service.js';
 import { generateCarReference } from '../../shared/utils/car-reference-generator.js';
-
-const prisma = new PrismaClient();
-
+import type { Transmission, FuelType, CarStatus } from '../../generated/prisma/client.js';
 export class CarService implements CarRepository {
     async createCar(data: CreateCarInput): Promise<void> {
         const reference = await generateCarReference(

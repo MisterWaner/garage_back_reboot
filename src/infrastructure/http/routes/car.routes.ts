@@ -12,4 +12,17 @@ const carController = new CarController(carService);
 
 export async function carRouter(fastify: FastifyInstance) {
     fastify.post<{ Body: CreateCarInput }>('/', carController.createCar);
+    fastify.get<{ Reply: CarResponse[] }>('/', carController.getAllCars);
+    fastify.get<{
+        Params: { licence_plate: string };
+        Reply: CarResponse | null;
+    }>('/:licence_plate', carController.getCarByLicencePlate);
+    fastify.put<{ Params: { licence_plate: string }; Body: UpdateCarInput }>(
+        '/:licence_plate',
+        carController.updateCar
+    );
+    fastify.delete<{ Params: { licence_plate: string } }>(
+        '/:licence_plate',
+        carController.deleteCar
+    );
 }

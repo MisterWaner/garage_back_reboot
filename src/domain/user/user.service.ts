@@ -1,4 +1,4 @@
-import { PrismaClient } from '../../infrastructure/db/generated/prisma/index.js';
+import prisma from '../../infrastructure/db/prisma.service.js'
 
 import type { UserRepository } from '../../application/user.repository.js';
 import {
@@ -13,7 +13,6 @@ import type {
     UpdatePasswordInput,
 } from './user.schema.js';
 
-const prisma = new PrismaClient();
 
 export class UserService implements UserRepository {
     async createEmployee({

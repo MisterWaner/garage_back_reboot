@@ -58,7 +58,7 @@ const carResponseSchema = z.object({
     added_by: userResponseSchema.shape.user_id,
 });
 
-const updateCarSchema = z.object({
+export const updateCarSchema = z.object({
     reference: z.string().min(1).max(100),
     brand: z.string().min(1).max(100),
     model: z.string().min(1).max(100),
